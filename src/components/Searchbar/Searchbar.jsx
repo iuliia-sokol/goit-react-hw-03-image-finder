@@ -15,7 +15,7 @@ export class Searchbar extends Component {
   };
 
   onInputChange = event => {
-    console.log(event.target);
+    // console.log(event.target);
     // console.log(event.target.closest('header'));
     // const header = event.target.closest('header');
     // header.classList.add('');
