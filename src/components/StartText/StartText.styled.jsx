@@ -1,5 +1,13 @@
 import styled from 'styled-components';
 
+export const StartTxtWrapper = styled.div`
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+
 export const StartTxt = styled.p`
   display: flex;
   justify-content: center;
