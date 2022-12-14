@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Notiflix from 'notiflix';
 
-const notifySettings = {
+export const notifySettings = {
   width: '380px',
   position: 'right-top',
   distance: '10px',

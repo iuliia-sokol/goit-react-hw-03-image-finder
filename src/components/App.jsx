@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Notiflix from 'notiflix';
 
-import { fetchData } from '../fetch';
+import { fetchData, notifySettings } from '../fetch';
 
 import { Container } from './App.styled';
+import { StartText } from './StartText/StartText';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
@@ -11,17 +12,9 @@ import { Modal } from './Modal/Modal';
 import { Btn } from './Button/Button';
 import DefaultPic from '../images/defaultPic.jpg';
 
-const notifySettings = {
-  width: '380px',
-  position: 'right-top',
-  distance: '10px',
-  opacity: 1,
-  fontSize: '20px',
-  borderRadius: '12px',
-};
-
 export class App extends Component {
   state = {
+    startPage: true,
     searchQuery: '',
     page: 1,
     picsArr: [],
@@ -37,6 +30,7 @@ export class App extends Component {
       this.state.searchQuery !== prevState.searchQuery ||
       this.state.page !== prevState.page
     ) {
+      this.setState({ startPage: false });
       this.setState({ isLoading: true });
       this.fetchQuery(this.state.searchQuery, this.state.page);
     }
@@ -128,6 +122,9 @@ export class App extends Component {
     return (
       <>
         <Searchbar onSubmit={this.onSubmit} />
+
+        {this.state.startPage && <StartText />}
+
         <Container>
           <ImageGallery
             pics={this.state.picsArr}

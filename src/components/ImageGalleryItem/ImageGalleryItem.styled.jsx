@@ -17,4 +17,6 @@ export const ListItem = styled.li`
 export const Pic = styled.img`
   width: 100%;
   height: auto;
+  height: 280px;
+  object-fit: cover;
 `;

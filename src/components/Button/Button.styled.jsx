@@ -5,8 +5,7 @@ export const BtnElement = styled.button`
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-  padding: 8px;
-  margin-left: 16px;
+  padding: 12px 16px;
   border: none;
   font-size: 16px;
   background-color: ${props =>
