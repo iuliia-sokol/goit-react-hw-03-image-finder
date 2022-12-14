@@ -10,7 +10,7 @@ const notifySettings = {
   borderRadius: '12px',
 };
 
-export async function fetchData(searchQuery, pageStart) {
+export async function fetchData(searchQuery, page) {
   const API_KEY = '30742354-1ccc482155368d7c8e305125c';
 
   const searchParams = new URLSearchParams({
@@ -19,7 +19,7 @@ export async function fetchData(searchQuery, pageStart) {
     image_type: 'photo',
     orientation: 'horizontal',
     safesearch: true,
-    page: pageStart,
+    page: page,
     per_page: 12,
   });
 

@@ -14,10 +14,27 @@ export const ModalOverlay = styled.div`
 `;
 
 export const ModalWindow = styled.div`
-  width: 70vw;
+  position: relative;
+  height: 500px;
+  width: 60vw;
 `;
 
 export const ModalPic = styled.img`
   width: 100%;
-  height: 500px;
+  height: 100%;
+  border-radius: 24px;
+`;
+
+export const ModalDescr = styled.p`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  padding: 12px 24px;
+  color: white;
+  font-size: 16px;
+  background-color: rgba(200, 200, 92, 0.3);
+  border-radius: 0px 0px 24px 24px;
+  margin: 0;
 `;
