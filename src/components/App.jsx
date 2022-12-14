@@ -10,6 +10,7 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
 import { Btn } from './Button/Button';
+import { LoaderBtn } from './Button/LoaderBtn';
 import DefaultPic from '../images/defaultPic.jpg';
 
 export class App extends Component {
@@ -130,14 +131,22 @@ export class App extends Component {
             pics={this.state.picsArr}
             showModal={this.toggleModal}
           />
-          {this.state.showLoadMoreBtn && (
-            <Btn
-              status="load"
-              text="Load more"
-              page={this.changePage}
-              onClick={this.onLoadMoreBtnClick}
-            />
-          )}
+          {this.state.showLoadMoreBtn &&
+            (this.state.isLoading ? (
+              <LoaderBtn
+                status="load"
+                text="Load more"
+                page={this.changePage}
+                onClick={this.onLoadMoreBtnClick}
+              />
+            ) : (
+              <Btn
+                status="load"
+                text="Load more"
+                page={this.changePage}
+                onClick={this.onLoadMoreBtnClick}
+              />
+            ))}
         </Container>
         {this.state.isLoading && <Loader />}
 
