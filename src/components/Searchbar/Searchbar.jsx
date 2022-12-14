@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { BsSearch } from 'react-icons/bs';
+import Notiflix from 'notiflix';
 
 import { Header, Form, Input } from './Searchbar.styled';
 import { Btn } from '../Button/Button';
-// import { Feedbackbtn } from '../FeedbackBtn/FeedbackBtn';
-// import { icons } from './icons';
-
-// const header = document.querySelector('header');
+import { notifySettings } from '../fetch';
 
 export class Searchbar extends Component {
   state = {
@@ -15,24 +13,21 @@ export class Searchbar extends Component {
   };
 
   onInputChange = event => {
-    // console.log(event.target);
-    // console.log(event.target.closest('header'));
-    // const header = event.target.closest('header');
-    // header.classList.add('');
-    const { name, value } = event.currentTarget;
-    this.setState({ [name]: value });
+    const query = event.currentTarget.value;
+    this.setState({ query: query });
   };
 
   handleSubmit = event => {
     event.preventDefault();
 
+    if (this.state.query.trim() === '') {
+      return Notiflix.Notify.warning(
+        'Please enter key words for search.',
+        notifySettings
+      );
+    }
     this.props.onSubmit(this.state);
-
-    this.resetForm();
-  };
-
-  resetForm = () => {
-    this.setState({ name: '', number: '' });
+    this.setState({ query: '' });
   };
 
   render() {
@@ -46,6 +41,7 @@ export class Searchbar extends Component {
             type="text"
             autoComplete="off"
             autoFocus
+            required
             placeholder="Search images and photos"
             onChange={this.onInputChange}
           />

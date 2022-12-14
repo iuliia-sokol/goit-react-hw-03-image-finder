@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
 import { BtnElement } from './Button.styled';
+import { Spinner } from 'react-bootstrap';
+import '/node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 export const Btn = ({
   text,
   status,
-  disabled = false,
   icon: Icon = null,
+  disabled = false,
   type = 'button',
   onClick = null,
-  onSubmit = null,
+  onLoaderPlay,
 }) => {
   return (
     <BtnElement
@@ -16,20 +18,29 @@ export const Btn = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      onSubmit={onSubmit}
     >
       {Icon && <Icon></Icon>}
+
+      {onLoaderPlay && (
+        <Spinner
+          as="span"
+          variant="light"
+          size="sm"
+          role="status"
+          aria-hidden="true"
+          animation="border"
+        />
+      )}
       {text}
     </BtnElement>
   );
 };
 
 Btn.propTypes = {
+  text: PropTypes.string.isRequired,
   icon: PropTypes.any,
   disabled: PropTypes.bool,
   type: PropTypes.string,
-  text: PropTypes.string.isRequired,
   status: PropTypes.string,
   onClick: PropTypes.func,
-  onSubmit: PropTypes.func,
 };

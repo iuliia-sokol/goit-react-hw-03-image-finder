@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Notiflix from 'notiflix';
 
-import { fetchData, notifySettings } from '../fetch';
+import { fetchData, notifySettings } from './fetch';
 
 import { Container } from './App.styled';
 import { StartText } from './StartText/StartText';
@@ -10,12 +10,10 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
 import { Btn } from './Button/Button';
-import { LoaderBtn } from './Button/LoaderBtn';
 import DefaultPic from '../images/defaultPic.jpg';
 
 export class App extends Component {
   state = {
-    startPage: true,
     searchQuery: '',
     page: 1,
     picsArr: [],
@@ -31,7 +29,6 @@ export class App extends Component {
       this.state.searchQuery !== prevState.searchQuery ||
       this.state.page !== prevState.page
     ) {
-      this.setState({ startPage: false });
       this.setState({ isLoading: true });
       this.fetchQuery(this.state.searchQuery, this.state.page);
     }
@@ -39,8 +36,7 @@ export class App extends Component {
 
   onSubmit = FormData => {
     const { query } = FormData;
-    this.setState({ searchQuery: query });
-    this.setState({ page: 1 });
+    this.setState({ searchQuery: query, page: 1, picsArr: [] });
   };
 
   async fetchQuery(query, page) {
@@ -49,16 +45,19 @@ export class App extends Component {
         const data = result.data;
         const total = data.totalHits;
         const picsArr = data.hits;
-
-        this.setState({ picsArr: picsArr });
-
         const picsLeft = total - 12 * this.state.page;
 
-        if (this.state.searchQuery === '') {
-          return Notiflix.Notify.warning(
-            'Please enter key words for search.',
+        if (picsArr.length === 0) {
+          this.setState({ showLoadMoreBtn: false });
+          Notiflix.Notify.failure(
+            'Sorry, there are no images matching your search query. Please try again.',
             notifySettings
           );
+          return;
+        } else {
+          this.setState(prevState => ({
+            picsArr: [...prevState.picsArr, ...picsArr],
+          }));
         }
 
         if (picsArr.length > 0 && this.state.page === 1) {
@@ -68,31 +67,26 @@ export class App extends Component {
           );
         }
 
-        if (this.state.showLoadMoreBtn && this.state.page > 1 && picsLeft > 0) {
-          Notiflix.Notify.success(
-            `${picsLeft} more images to show`,
-            notifySettings
-          );
-        }
+        picsLeft > 0
+          ? this.setState({ showLoadMoreBtn: true })
+          : this.setState({ showLoadMoreBtn: false });
 
-        if (picsArr.length === 0) {
-          this.setState({ showLoadMoreBtn: false });
-          Notiflix.Notify.failure(
-            'Sorry, there are no images matching your search query. Please try again.',
-            notifySettings
-          );
-          return;
-        }
+        // if (this.state.showLoadMoreBtn && this.state.page > 1 && picsLeft > 0) {
+        //   Notiflix.Notify.success(
+        //     `${picsLeft} more images to show`,
+        //     notifySettings
+        //   );
+        // }
 
-        if (picsLeft > 0) {
-          this.setState({ showLoadMoreBtn: true });
-        } else {
-          this.setState({ showLoadMoreBtn: false });
-          Notiflix.Notify.info(
-            `This is the last page. No more images to show`,
-            notifySettings
-          );
-        }
+        // if (picsLeft > 0) {
+        //   this.setState({ showLoadMoreBtn: true });
+        // } else {
+        //   this.setState({ showLoadMoreBtn: false });
+        // Notiflix.Notify.info(
+        //   `This is the last page. No more images to show`,
+        //   notifySettings
+        // );
+        // }
       });
     } catch (error) {
       console.log(error);
@@ -124,29 +118,22 @@ export class App extends Component {
       <>
         <Searchbar onSubmit={this.onSubmit} />
 
-        {this.state.startPage && <StartText />}
+        {this.state.picsArr.length === 0 && <StartText />}
 
         <Container>
           <ImageGallery
             pics={this.state.picsArr}
             showModal={this.toggleModal}
           />
-          {this.state.showLoadMoreBtn &&
-            (this.state.isLoading ? (
-              <LoaderBtn
-                status="load"
-                text="Load more"
-                page={this.changePage}
-                onClick={this.onLoadMoreBtnClick}
-              />
-            ) : (
-              <Btn
-                status="load"
-                text="Load more"
-                page={this.changePage}
-                onClick={this.onLoadMoreBtnClick}
-              />
-            ))}
+
+          {this.state.showLoadMoreBtn && (
+            <Btn
+              text="Load more"
+              status="load"
+              onClick={this.onLoadMoreBtnClick}
+              onLoaderPlay={this.state.isLoading}
+            />
+          )}
         </Container>
         {this.state.isLoading && <Loader />}
 
