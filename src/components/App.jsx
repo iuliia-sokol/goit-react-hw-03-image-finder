@@ -3,9 +3,13 @@ import Notiflix from 'notiflix';
 
 import { fetchData } from '../fetch';
 
-// import { Container } from './App.styled';
+import { Container } from './App.styled';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
+import { Loader } from './Loader/Loader';
+import { Modal } from './Modal/Modal';
+import { Btn } from './Button/Button';
+import DefaultPic from '../images/defaultPic.jpg';
 
 const notifySettings = {
   width: '380px',
@@ -22,6 +26,11 @@ export class App extends React.Component {
     pageStart: 1,
     picsArr: [],
     picsLeft: 0,
+    isLoading: false,
+    showModal: false,
+    showLoadMoreBtn: false,
+    largeImageURL: DefaultPic,
+    imageTags: null,
   };
 
   onSubmit = FormData => {
@@ -36,6 +45,8 @@ export class App extends React.Component {
   fetchQuery = query => {
     // console.log(this.state.searchQuery);
     try {
+      this.setState({ isLoading: true });
+
       fetchData(query, this.state.pageStart).then(result => {
         const data = result.data;
         const total = data.totalHits;
@@ -73,22 +84,59 @@ export class App extends React.Component {
         }
 
         if (picsLeft > 0) {
-          // refs.loadMoreBtn.classList.remove('is-hidden');
+          this.setState({ showLoadMoreBtn: true });
+          this.setState(prevState => ({
+            pageStart: this.state.pageStart + 1,
+          }));
         }
-
-        // this.setState(prevState => ({
-        //   pageStart: this.state.pageStart + 1,
-        // }));
       });
-    } catch {}
+    } catch (error) {
+      console.log(error);
+      Notiflix.Notify.failure(
+        'Sorry, something went wrong, please try again later',
+        notifySettings
+      );
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  };
+
+  toggleModal = (largeImageURL, imageTags) => {
+    this.setState(prevState => ({
+      showModal: !prevState.showModal,
+      largeImageURL: largeImageURL,
+      imageTags: imageTags,
+    }));
+  };
+
+  loadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
 
   render() {
     return (
-      <div>
+      <>
         <Searchbar onSubmit={this.onSubmit} />
-        <ImageGallery pics={this.state.picsArr}></ImageGallery>
-      </div>
+        <Container>
+          <ImageGallery
+            pics={this.state.picsArr}
+            showModal={this.toggleModal}
+          />
+          {this.state.showLoadMoreBtn && (
+            <Btn status="load" text="Load more" page={this.changePage} />
+          )}
+        </Container>
+        {this.state.isLoading && <Loader />}
+        {this.state.showModal && (
+          <Modal
+            src={this.state.largeImageURL}
+            alt={this.state.imageTags}
+            closeModal={this.toggleModal}
+          />
+        )}
+      </>
     );
   }
 }

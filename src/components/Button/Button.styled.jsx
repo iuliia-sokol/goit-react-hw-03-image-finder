@@ -9,7 +9,12 @@ export const BtnElement = styled.button`
   margin-left: 16px;
   border: none;
   font-size: 16px;
-  background-color: transparent;
+  background-color: ${props =>
+    props.status === 'search'
+      ? 'transparent'
+      : props.status === 'load'
+      ? 'hsla(248, 39%, 39%, 1)'
+      : 'grey'};
   color: hsla(0, 0%, 100%, 1);
   transform: scale(1);
 

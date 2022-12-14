@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
 export const ListItem = styled.li`
-  width: 285px;
-  border-radius: 8px;
+  width: calc((100% - 40px) / 3);
+  border-radius: 16px;
   border: 2px solid hsla(0, 0%, 50%, 0.4);
   overflow: hidden;
-  @include transition(transform);
-  z-index: -1;
+  transform: scale(1);
+  transition-duration: 700ms;
 
   &:hover,
   &:focus {
@@ -16,5 +16,5 @@ export const ListItem = styled.li`
 
 export const Pic = styled.img`
   width: 100%;
-  height: 220px;
+  height: auto;
 `;

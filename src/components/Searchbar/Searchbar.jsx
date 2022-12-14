@@ -39,7 +39,7 @@ export class Searchbar extends Component {
     return (
       <Header>
         <Form onSubmit={this.handleSubmit}>
-          <Btn type="submit" icon={BsSearch} text="Search" />
+          <Btn type="submit" icon={BsSearch} text="Search" status="search" />
           <Input
             value={this.state.query}
             name="query"
