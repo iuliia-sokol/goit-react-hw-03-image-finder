@@ -25,7 +25,6 @@ export class App extends React.Component {
     searchQuery: '',
     pageStart: 1,
     picsArr: [],
-    picsLeft: 0,
     isLoading: false,
     showModal: false,
     showLoadMoreBtn: false,
@@ -36,28 +35,22 @@ export class App extends React.Component {
   onSubmit = FormData => {
     const { query } = FormData;
     this.setState({ searchQuery: query });
-
-    console.log(this.state.searchQuery);
-
-    this.fetchQuery(query);
+    this.setState({ pageStart: 1 });
+    this.fetchQuery(query, 1);
   };
 
-  fetchQuery = query => {
-    // console.log(this.state.searchQuery);
+  fetchQuery = (query, page) => {
     try {
       this.setState({ isLoading: true });
 
-      fetchData(query, this.state.pageStart).then(result => {
+      fetchData(query, page).then(result => {
         const data = result.data;
         const total = data.totalHits;
-
         const picsArr = data.hits;
 
         this.setState({ picsArr: picsArr });
 
-        const picsLeft = total - picsArr.length * this.state.pageStart;
-        this.setState({ picsLeft: picsLeft });
-        // console.log(picsLeft);
+        const picsLeft = total - 12 * this.state.pageStart;
 
         if (this.state.searchQuery === '') {
           return Notiflix.Notify.warning(
@@ -66,9 +59,20 @@ export class App extends React.Component {
           );
         }
 
-        if (picsArr.length > 0) {
+        if (picsArr.length > 0 && this.state.pageStart === 1) {
           Notiflix.Notify.success(
             `Hooray! We found ${total} images.`,
+            notifySettings
+          );
+        }
+
+        if (
+          this.state.showLoadMoreBtn &&
+          this.state.pageStart > 1 &&
+          picsLeft > 0
+        ) {
+          Notiflix.Notify.success(
+            `${picsLeft} more images to show`,
             notifySettings
           );
         }
@@ -78,8 +82,6 @@ export class App extends React.Component {
             'Sorry, there are no images matching your search query. Please try again.',
             notifySettings
           );
-          // refs.gallery.innerHTML = '';
-          // refs.loadMoreBtn.classList.add('is-hidden');
           return;
         }
 
@@ -88,6 +90,12 @@ export class App extends React.Component {
           this.setState(prevState => ({
             pageStart: this.state.pageStart + 1,
           }));
+        } else {
+          Notiflix.Notify.info(
+            `This is the last page. No more images to show`,
+            notifySettings
+          );
+          this.setState({ showLoadMoreBtn: false });
         }
       });
     } catch (error) {
@@ -109,7 +117,8 @@ export class App extends React.Component {
     }));
   };
 
-  loadMore = () => {
+  onLoadMoreBtnClick = () => {
+    this.fetchQuery(this.state.searchQuery, this.state.pageStart);
     this.setState(prevState => ({
       page: prevState.page + 1,
     }));
@@ -125,7 +134,12 @@ export class App extends React.Component {
             showModal={this.toggleModal}
           />
           {this.state.showLoadMoreBtn && (
-            <Btn status="load" text="Load more" page={this.changePage} />
+            <Btn
+              status="load"
+              text="Load more"
+              page={this.changePage}
+              onClick={this.onLoadMoreBtnClick}
+            />
           )}
         </Container>
         {this.state.isLoading && <Loader />}
